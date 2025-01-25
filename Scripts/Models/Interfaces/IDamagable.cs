@@ -1,0 +1,7 @@
+namespace Models.Interfaces
+{
+    public interface IDamagable
+    {
+        public void Damage();
+    }
+}
