@@ -1,6 +1,7 @@
 using System;
 using System.Collections.Generic;
 using Constants;
+using Managers;
 using Models.Interfaces;
 using Player.Component;
 using ScriptableObjects;
@@ -12,7 +13,7 @@ using Weapon.Factory;
 namespace Player.Controller
 {
     [RequireComponent(typeof(LineRenderer))]
-    public class PlayerController : MonoBehaviour
+    public class PlayerController : MonoBehaviour, IDamagable
     {
         [SerializeField] private GameObject _playerBarrelMesh;
         [SerializeField] private StatConfiguration_ScriptableObject _statConfiguration_ScriptableObject;
@@ -35,10 +36,10 @@ namespace Player.Controller
             _turretFirePoint = _playerBarrelMesh.transform.Find("SM_Bld_Planetarty_Cannon_01_ShootPoint");
             _playerShooting = new PlayerShooting(_turretFirePoint);
             
-            /// TODO: Initialize as a HUD component instead of a stats component
             // Add a stats UI component
             _playerStats = new PlayerStats(_playerStats_UserInterface);
             _playerStats.Initialize(_statConfiguration_ScriptableObject);
+            _playerStats.OnStatZero += Statistics_OnStatZero;
         }
 
         private void Update()
@@ -55,7 +56,65 @@ namespace Player.Controller
                 
                 _playerShooting?.EquipWeapon(weapon);
             }
+
+            // Temporary damage reduction
+            if (Input.GetKeyDown(KeyCode.P))
+            {
+                Damage();
+            }
+            
+            // Temporary damage reduction
+            if (Input.GetKeyDown(KeyCode.O))
+            {
+                Heal();
+            }
+            
+        }
+
+        /// <summary>
+        /// Allow for the player to take damage
+        /// </summary>
+        public void Damage()
+        {
+            Debug.Log("Damange Player Controller");
+            Dictionary<StatType, float> _stats = new Dictionary<StatType, float>();
+            _stats.Add(StatType.Health, -20);
+            
+            _playerStats.ModifyStat(_stats);
         }
         
+        /// <summary>
+        /// Allow for the player to take damage
+        /// </summary>
+        public void Heal()
+        {
+            Debug.Log("Heal Player Controller");
+            Dictionary<StatType, float> _stats = new Dictionary<StatType, float>();
+            _stats.Add(StatType.Health, 10);
+            
+            _playerStats.ModifyStat(_stats);
+        }
+        
+        /// <summary>
+        /// Listen for when certain stats hit zero
+        /// </summary>
+        /// <param name="statType"></param>
+        private void Statistics_OnStatZero(StatType statType)
+        {
+            switch (statType)
+            {
+                case StatType.Health:
+                    Destroy(this.gameObject);
+                    LevelManager.Instance.GameOver(false);
+                    break;
+                case StatType.Armor:
+                    break;
+                case StatType.Shield:
+                    break;
+                default:
+                    Debug.LogError($"Unknown stat type: {statType}");
+                    break;
+            }
+        }
     }
 }

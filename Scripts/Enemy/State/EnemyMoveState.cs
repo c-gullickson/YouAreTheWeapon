@@ -9,26 +9,27 @@ namespace Enemy.State
         private Vector3 _startPos;
         private Vector3 _targetPos;
         
-        public EnemyMovementPattern movementPattern = EnemyMovementPattern.SideToSide;
-        public float speed = 5f;
-        public float amplitude = 2f; // Used for SideToSide and VShape
-        public float frequency = 1f; // Used for SideToSide and Circular
+        private EnemyMovementPattern _movementPattern = EnemyMovementPattern.SideToSide;
+        private float _speed = 12f;
+        private float _amplitude = 6f; // Used for SideToSide and VShape
+        private float _frequency = 5f; // Used for SideToSide and Circular
         
         private float elapsedTime;
-
         
         public EnemyMoveState(EnemyController enemyController) : base(enemyController)
         {
-            
-        }
+            _speed = _enemyController.EnemyConfiguration.MovementSpeed;
 
+            _movementPattern = _enemyController.EnemyConfiguration.MovementPattern;
+            _amplitude = _enemyController.EnemyConfiguration.Amplitude;
+            _frequency = _enemyController.EnemyConfiguration.Frequency;
+        }
 
         public override void Enter()
         {
             _startPos = _enemyController.transform.position;
             _targetPos = _enemyController._targetPosition;
             Debug.Log($"Enter Enemy Move State: Starting At {_startPos}");
-
         }
 
         public override void Update()
@@ -36,29 +37,36 @@ namespace Enemy.State
             elapsedTime += Time.deltaTime;
             
             Vector3 direction = (_targetPos - _startPos).normalized;
-            float journeyLength = Vector3.Distance(_startPos, _targetPos);
-            float journeyProgress = Mathf.Clamp01((elapsedTime * speed) / journeyLength);
+            float distanceToTarget = Vector3.Distance(_startPos, _targetPos);
+
+            // If the target is within attack range, then change to an attack state
+            if (distanceToTarget < _enemyController.EnemyConfiguration.AttackRange)
+            {
+                _enemyController.TransitionToState(new EnemyAttackState(_enemyController));
+            }
+            
+            float journeyProgress = Mathf.Clamp01((elapsedTime * _speed) / distanceToTarget);
 
             // Calculate base forward movement
             Vector3 basePosition = Vector3.Lerp(_startPos, _targetPos, journeyProgress);
 
             // Apply additional pattern-based movement
-            switch (movementPattern)
+            switch (_movementPattern)
             {
                 case EnemyMovementPattern.SideToSide:
-                    _enemyController.transform.position = basePosition + Vector3.right * Mathf.Sin(elapsedTime * frequency) * amplitude;
+                    _enemyController.transform.position = basePosition + Vector3.right * Mathf.Sin(elapsedTime * _frequency) * _amplitude;
                     break;
                 case EnemyMovementPattern.Circular:
                     _enemyController.transform.position = basePosition + new Vector3(
-                        Mathf.Cos(elapsedTime * frequency) * amplitude,
+                        Mathf.Cos(elapsedTime * _frequency) * _amplitude,
                         0f,
-                        Mathf.Sin(elapsedTime * frequency) * amplitude
+                        Mathf.Sin(elapsedTime * _frequency) * _amplitude
                     );
                     break;
                 case EnemyMovementPattern.VShaped:
                     _enemyController.transform.position = basePosition + new Vector3(
-                        Mathf.Sin(elapsedTime * frequency) * amplitude,
-                        Mathf.Abs(Mathf.Sin(elapsedTime * frequency)) * amplitude,
+                        Mathf.Sin(elapsedTime * _frequency) * _amplitude,
+                        Mathf.Abs(Mathf.Sin(elapsedTime * _frequency)) * _amplitude,
                         0f
                     );
                     break;

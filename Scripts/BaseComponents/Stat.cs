@@ -6,6 +6,9 @@ namespace BaseComponents
 {
     public interface IStat
     {
+        public StatType GetStatType();
+        public Color GetStatColor();
+        
         public float IncreaseStat(float amount);
         public float DecreaseStat(float amount);
 
@@ -17,14 +20,36 @@ namespace BaseComponents
         private StatType _statType;
         private float _currentStatAmount;
         private float _maxStatAmount;
+        
+        private Color _statColor;
 
         public event EventHandler<StatChangeEvent> OnStatChange;
 
-        public Stat(StatType statType, float maxStatAmount)
+        public Stat(StatType statType, float maxStatAmount, Color statColor)
         {
             _statType = statType;
             _currentStatAmount = maxStatAmount;
             _maxStatAmount = maxStatAmount;
+            
+            _statColor = statColor;
+        }
+
+        /// <summary>
+        /// Return the main type of the stat
+        /// </summary>
+        /// <returns></returns>
+        public StatType GetStatType()
+        {
+            return _statType;
+        }
+
+        /// <summary>
+        /// Return the color of the stat
+        /// </summary>
+        /// <returns></returns>
+        public Color GetStatColor()
+        {
+            return _statColor;
         }
 
         /// <summary>

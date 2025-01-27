@@ -10,6 +10,7 @@ namespace ScriptableObjects
         public StatType statType;
         public string StatName;
         public string StatDescription;
+        public Color StatColor;
         
         [Header("Stat Values")]
         public float StatStartValue;

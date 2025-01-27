@@ -29,7 +29,7 @@ namespace Enemy.Component
             // Create a dictionary containing each new stat
             foreach (var newStat in statConfiguration.AppliedStatsList)
             {
-                var statToAdd = new Stat(newStat.statType, newStat.StatStartValue);
+                var statToAdd = new Stat(newStat.statType, newStat.StatStartValue, newStat.StatColor);
                 _enemyStats.Add(newStat.statType, statToAdd);
             }
         }
@@ -40,7 +40,7 @@ namespace Enemy.Component
         /// <param name="stat"></param>
         public void AddNewStat(Stat_ScriptableObject stat)
         {
-            _enemyStats.TryAdd(stat.statType, new Stat(stat.statType, stat.StatStartValue));
+            _enemyStats.TryAdd(stat.statType, new Stat(stat.statType, stat.StatStartValue, stat.StatColor));
         }
 
         /// <summary>

@@ -33,7 +33,7 @@ namespace Player.Component
             // Create a dictionary containing each new stat
             foreach (var newStat in statConfiguration.AppliedStatsList)
             {
-                var statToAdd = new Stat(newStat.statType, newStat.StatStartValue);
+                var statToAdd = new Stat(newStat.statType, newStat.StatStartValue, newStat.StatColor);
                 _playerStats.Add(newStat.statType,statToAdd );
                 _playerStats_UserInterface.AddPlayerStat(statToAdd);
             }
@@ -45,7 +45,7 @@ namespace Player.Component
         /// <param name="stat"></param>
         public void AddNewStat(Stat_ScriptableObject stat)
         {
-            _playerStats.TryAdd(stat.statType, new Stat(stat.statType, stat.StatStartValue));
+            _playerStats.TryAdd(stat.statType, new Stat(stat.statType, stat.StatStartValue, stat.StatColor));
         }
 
         /// <summary>
@@ -63,6 +63,7 @@ namespace Player.Component
         /// <param name="modifiedStats"></param>
         public void ModifyStat(Dictionary<StatType, float> modifiedStats)
         {
+            float statModifiedAmount = 0;
             foreach (var modifiedStat in modifiedStats)
             {
                 var targetStat = _playerStats[modifiedStat.Key];
@@ -71,11 +72,14 @@ namespace Player.Component
                 // Otherwise, assume an increase
                 if (modifiedStat.Value < 0)
                 {
-                    targetStat.DecreaseStat(modifiedStat.Value);
-                }
+                    statModifiedAmount = targetStat.DecreaseStat(modifiedStat.Value);
+                    if (statModifiedAmount == 0)
+                    {
+                        OnStatZero(modifiedStat.Key);
+                    }                }
                 else
                 {
-                    targetStat.IncreaseStat(modifiedStat.Value);
+                    statModifiedAmount = targetStat.IncreaseStat(modifiedStat.Value);
                 }
             }
         }

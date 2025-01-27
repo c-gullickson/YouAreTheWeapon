@@ -14,8 +14,11 @@ namespace Enemy.Controller
     {
         /// TODO: Change this to be a derived value?
         [SerializeField] public Vector3 _targetPosition;
+        
+        [SerializeField] private EnemyConfiguration_ScriptableObject _enemyConfiguration_ScriptableObject;
+        public EnemyConfiguration_ScriptableObject EnemyConfiguration => _enemyConfiguration_ScriptableObject;
+        
         [SerializeField] private StatConfiguration_ScriptableObject _statConfiguration_ScriptableObject;
-
         
         private EnemyState _currentState;
         private IStatistics _enemyStats = null;
