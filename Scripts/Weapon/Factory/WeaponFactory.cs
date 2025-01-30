@@ -16,9 +16,15 @@ namespace Weapon.Factory
                 Debug.LogError($"Weapon {weaponName} not found in the database!");
                 return null;
             }
-            
-            // TODO: Should this create a game object instead of a class?
-            return new SimpleLaser(weaponConfiguration);
+
+            switch (weaponName)
+            {
+                case "SimpleLaser_ScriptableObject":
+                    return new SimpleLaser(weaponConfiguration);
+                case "WideLaser_ScriptableObject":
+                    return new WideLaser(weaponConfiguration);
+            }
+            return null;
         }
     }
 }

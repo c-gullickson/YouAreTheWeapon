@@ -56,29 +56,26 @@ namespace Player.Controller
                 
                 _playerShooting?.EquipWeapon(weapon);
             }
-
-            // Temporary damage reduction
-            if (Input.GetKeyDown(KeyCode.P))
-            {
-                Damage();
-            }
             
-            // Temporary damage reduction
-            if (Input.GetKeyDown(KeyCode.O))
+            if (Input.GetKeyDown(KeyCode.Alpha2))
             {
-                Heal();
+                // Create a new instance of a weapon
+                Debug.Log("Equip New Weapon: Alpha 2");
+                var weapon = WeaponFactory.CreateWeaponController("WideLaser_ScriptableObject");
+                weapon.Initialize(_lineRenderer, _turretFirePoint );
+                
+                _playerShooting?.EquipWeapon(weapon);
             }
-            
         }
 
         /// <summary>
         /// Allow for the player to take damage
         /// </summary>
-        public void Damage()
+        public void Damage(StatType statType, float damage)
         {
             Debug.Log("Damange Player Controller");
             Dictionary<StatType, float> _stats = new Dictionary<StatType, float>();
-            _stats.Add(StatType.Health, -20);
+            _stats.Add(statType, damage);
             
             _playerStats.ModifyStat(_stats);
         }

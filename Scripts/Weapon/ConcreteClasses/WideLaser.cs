@@ -6,7 +6,7 @@ using Weapon.Controller;
 
 namespace Weapon.ConcreteClasses
 {
-    public class SimpleLaser : WeaponController
+    public class WideLaser: WeaponController
     {
         private WeaponConfiguration_ScriptableObject _weaponConfiguration_ScriptableObject;
         private LineRenderer _lineRenderer;
@@ -14,7 +14,7 @@ namespace Weapon.ConcreteClasses
         
         private LayerMask _layerMask;
         
-        public SimpleLaser(WeaponConfiguration_ScriptableObject weaponConfiguration_ScriptableObject)
+        public WideLaser(WeaponConfiguration_ScriptableObject weaponConfiguration_ScriptableObject)
         {
             _weaponConfiguration_ScriptableObject = weaponConfiguration_ScriptableObject;
             _layerMask = _weaponConfiguration_ScriptableObject.TargetingLayer;
@@ -90,6 +90,7 @@ namespace Weapon.ConcreteClasses
                         if (damagable != null)
                         {
                             var damage = _weaponConfiguration_ScriptableObject.Damage * -1;
+
                             damagable.Damage(StatType.Health, damage);
                         }
                     }

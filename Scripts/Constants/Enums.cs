@@ -7,10 +7,17 @@ namespace Constants
         Shield
     }
 
+    public enum EnemyAttackType
+    {
+        Bomb,
+        SimpleLaser,
+        AutoLaser
+    }
+
     public enum EnemyMovementPattern
     {
         SideToSide,
-        VShaped,
+        V,
         Circular,
         Forward
     }

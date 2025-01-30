@@ -1,4 +1,5 @@
 using System;
+using Constants;
 using ScriptableObjects;
 using UnityEngine;
 using UnityEngine.SceneManagement;
@@ -8,6 +9,8 @@ namespace Managers
     public class LevelManager: MonoBehaviour
     {
         public event Action OnTutorialCompleted;
+        public event EventHandler<LevelCountChangeEvent> OnLevelCompleted;
+        public event EventHandler<LevelTimeRemainingEvent> OnLevelTimeRemaining;
 
         public static LevelManager Instance { get; private set; }
         private static LevelManager _instance;        
@@ -26,6 +29,21 @@ namespace Managers
             
             DontDestroyOnLoad(this.gameObject);
         }
+
+        /// <summary>
+        /// When starting a new level, pass an action to the UI
+        /// </summary>
+        /// <param name="level"></param>
+        public void NewLevel(int level)
+        {
+            OnLevelCompleted?.Invoke(this, new LevelCountChangeEvent(){levelCount = level + 1});
+        }
+
+        public void LevelWaitRemaining(float time)
+        {
+            OnLevelTimeRemaining?.Invoke(this, new LevelTimeRemainingEvent() {levelTime = time});
+        }
+        
 
         /// <summary>
         /// Load a new scene additively to the scene that is existing
@@ -53,17 +71,6 @@ namespace Managers
         {
             SceneManager.UnloadSceneAsync(sceneName);
             OnTutorialCompleted?.Invoke();
-        }
-
-        
-        /// <summary>
-        /// Instantiate a new Enemy 
-        /// </summary>
-        /// <param name="prefab"></param>
-        /// <param name="spawnLocation"></param>
-        public void InstantiateEnemyGameObject(GameObject prefab, Transform spawnLocation)
-        {
-            Instantiate(prefab, spawnLocation.position, Quaternion.identity, transform);
         }
 
         

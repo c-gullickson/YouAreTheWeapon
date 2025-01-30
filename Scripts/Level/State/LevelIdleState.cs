@@ -1,4 +1,5 @@
 using Level.Controller;
+using Managers;
 using UnityEngine;
 
 namespace Level.State
@@ -10,15 +11,12 @@ namespace Level.State
         
         public LevelIdleState(LevelController levelController) : base(levelController)
         {
+            
         }
-
-        /// <summary>
-        /// TODO: Should instantiate the player UI for upgrades
-        /// TODO: When complete, start the countdown for round starting
-        /// </summary>
+        
         public override void Enter()
         {
-            Debug.Log("EnterLevel Idle State");
+            Debug.Log($"Enter Level Idle State {_levelController.CurrentLevelIndex}");
             _isStart = true;
         }
 
@@ -30,6 +28,8 @@ namespace Level.State
                 if (_timeBeforeStart > 0)
                 {
                     _timeBeforeStart -= Time.deltaTime;
+                    LevelManager.Instance.LevelWaitRemaining(_timeBeforeStart);
+                    
                     Debug.Log($"Round PreStart Timer... Time left: {_timeBeforeStart:F2} seconds");
                 }
                 else

@@ -4,7 +4,7 @@ using UnityEngine.UI;
 
 namespace ScriptableObjects
 {
-    [CreateAssetMenu(fileName = "New Scriptable Object", menuName = "ScriptableObject/EnemyConfiguration")]
+    [CreateAssetMenu(fileName = "New Stat Configuration ScriptableObject", menuName = "ScriptableObject/EnemyConfiguration")]
     public class EnemyConfiguration_ScriptableObject: ScriptableObject
     {
         [Header("Enemy Details")] 
@@ -15,8 +15,9 @@ namespace ScriptableObjects
         public float MovementSpeed;
         public float Amplitude;
         public float Frequency;
-        
-        [Header("Attack")]
+
+        [Header("Attack")] 
+        public EnemyAttackType AttackType;
         public float AttackRange;
 
         public float AttackSpeed;

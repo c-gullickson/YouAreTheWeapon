@@ -1,5 +1,6 @@
 using System.Collections.Generic;
 using Level.State;
+using Managers;
 using Models.Interfaces;
 using ScriptableObjects;
 using Spawns.Controller;
@@ -12,7 +13,7 @@ namespace Level.Controller
         [SerializeField] private LevelConfiguration_ScriptableObject _levelConfigurationScriptableObject;
         
         private LevelBaseState _currentState;
-        private int _currentLevelIndex;
+        private int _currentLevelIndex = 0;
         public int CurrentLevelIndex => _currentLevelIndex;
         
         
@@ -33,6 +34,8 @@ namespace Level.Controller
         private void Awake()
         {
             // Set to the first level
+            LevelManager.Instance.NewLevel(_currentLevelIndex);
+            
             _currentLevelScriptableObject = _levelConfigurationScriptableObject.Levels[_currentLevelIndex];
             _currentState = new LevelTutorialState(this);
             _currentState.Enter();
@@ -74,8 +77,20 @@ namespace Level.Controller
         public void IncreaseLevel()
         {
             _currentLevelIndex++;
-            _currentLevelScriptableObject = _levelConfigurationScriptableObject.Levels[_currentLevelIndex];
-            _currentState = new LevelTutorialState(this);
+            
+            // Ensure that there are still levels to load
+            // Otherwise, provide the player a game over scene
+            if (_currentLevelIndex < _levelConfigurationScriptableObject.Levels.Count)
+            {
+                _currentLevelScriptableObject = _levelConfigurationScriptableObject.Levels[_currentLevelIndex];
+                LevelManager.Instance.NewLevel(_currentLevelIndex);
+
+                TransitionToState(new LevelTutorialState(this));
+            }
+            else
+            {
+                LevelManager.Instance.GameOver(true);
+            }
         }
     }
 }

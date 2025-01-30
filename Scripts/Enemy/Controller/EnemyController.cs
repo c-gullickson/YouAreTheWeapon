@@ -1,20 +1,24 @@
 using System;
+using System.Collections;
 using System.Collections.Generic;
 using BaseComponents;
 using Constants;
 using Enemy.Component;
 using Enemy.State;
+using Managers;
 using Models.Interfaces;
 using ScriptableObjects;
 using UnityEngine;
 
 namespace Enemy.Controller
 {
+    [RequireComponent(typeof(Animator))]
     public class EnemyController: MonoBehaviour, IDamagable
     {
         /// TODO: Change this to be a derived value?
         [SerializeField] public Vector3 _targetPosition;
-        
+        [SerializeField] private GameObject _explosionParticleObject;
+
         [SerializeField] private EnemyConfiguration_ScriptableObject _enemyConfiguration_ScriptableObject;
         public EnemyConfiguration_ScriptableObject EnemyConfiguration => _enemyConfiguration_ScriptableObject;
         
@@ -24,6 +28,7 @@ namespace Enemy.Controller
         private IStatistics _enemyStats = null;
         
         internal Vector3 _spawningPosition;
+        
         
         private void Awake()
         {
@@ -56,13 +61,22 @@ namespace Enemy.Controller
         /// Take damage from a damage source
         /// </summary>
         /// TODO: need to pass across a damage type? 
-        public void Damage()
+        public void Damage(StatType statType, float damage)
         {
             Debug.Log("Damange Enemy Controller");
             Dictionary<StatType, float> _stats = new Dictionary<StatType, float>();
-            _stats.Add(StatType.Health, -10);
+            _stats.Add(statType, damage);
             
             _enemyStats.ModifyStat(_stats);
+        }
+
+        /// <summary>
+        /// Function to destroy the game object
+        /// </summary>
+        public void DestroyEnemy()
+        {
+            EnemyManager.Instance.RemoveEnemyToList(this);
+            StartCoroutine(DestroyEnemyCoroutine());
         }
         
         /// <summary>
@@ -74,7 +88,7 @@ namespace Enemy.Controller
             switch (statType)
             {
                 case StatType.Health:
-                    Destroy(this.gameObject);
+                    DestroyEnemy();
                     break;
                 case StatType.Armor:
                     break;
@@ -84,6 +98,17 @@ namespace Enemy.Controller
                     Debug.LogError($"Unknown stat type: {statType}");
                     break;
             }
+        }
+        
+        private IEnumerator DestroyEnemyCoroutine()
+        {
+            var explosionParticles = Instantiate(_explosionParticleObject, this.transform);
+            var particleSystem = explosionParticles.GetComponent<ParticleSystem>();
+            particleSystem.transform.position = this.transform.position;
+            particleSystem.Play();
+            
+            yield return new WaitForSeconds(particleSystem.main.duration);
+            Destroy(this.gameObject);
         }
     }
 }

@@ -18,10 +18,10 @@ namespace Level.State
 
         private Queue<EnemySpawn_ScriptableObject> _spawnableEnemies = new Queue<EnemySpawn_ScriptableObject>();
         private EnemySpawn_ScriptableObject _currentEnemiesSpawning;
-        
+
+        private int _enemiesToSpawn = 0;
         private float _spawnDelayTimer = 0f;
         private List<Transform> _spawnControllerTransforms = new List<Transform>();
-
         
         public LevelPlayState(LevelController levelController) : base(levelController)
         {
@@ -34,47 +34,50 @@ namespace Level.State
 
         public override void Enter()
         {
+            EnemyManager.Instance.OnAllEnemiesDestroyed += EnemyManager_OnAllEnemiesDestroyed;
             Debug.Log("Enter Level Play State");
             _currentEnemiesSpawning = _spawnableEnemies.Dequeue();
+            _enemiesToSpawn = _currentEnemiesSpawning.NumberOfEnemiesToSpawn;
             _spawnDelayTimer = _currentEnemiesSpawning.SpawnDelay;
+
+            _hasEnemiesToSpawn = true;
+            _hasEnemiesRemaining = true;
         }
 
         public override void Update()
         {
-            if (_currentEnemiesSpawning == null) { Debug.Log("Empyt Current Enemy Spawn");}
+            if (_currentEnemiesSpawning == null)
+            {
+                Debug.Log("Empty Current Enemy Spawn");
+                // If nothing is left to spawn, and all enemies on screen have been defeated, then transition to the end state of the level
+                if (!_hasEnemiesRemaining)
+                {
+                    _levelController.TransitionToState(new LevelEndState(_levelController));
+                }
+            }
 
 
             // Countdown the timer before transitioning to the Level Play State
             if (_spawnDelayTimer <= 0)
             {
                 // Still have enemies to try and spawn
-                if (_currentEnemiesSpawning?.NumberOfEnemiesToSpawn > 0)
+                if (_enemiesToSpawn > 0)
                 {
                     var _spawnControllerTransforms = _levelController.BasicSpawnControllerTransforms;
                     var spawn = GetRandomSpawnObject(_spawnControllerTransforms);
                     
                     // Spawn a new enemy
-                    LevelManager.Instance.InstantiateEnemyGameObject(_currentEnemiesSpawning.EnemyPrefab, spawn);
+                    EnemyManager.Instance.InstantiateAndAddEnemyToList(_currentEnemiesSpawning.EnemyPrefab, spawn);
                     _spawnDelayTimer = _currentEnemiesSpawning.SpawnDelay;
-                    _currentEnemiesSpawning.NumberOfEnemiesToSpawn--;
+                    _enemiesToSpawn--;
                 }
                 else
                 {
-                    // TODO: Need to put in more guards when the list of enemy types switch
-                    var hasMoreEnemies = _spawnableEnemies.TryDequeue(out _currentEnemiesSpawning);
-                    if (!hasMoreEnemies)
-                    {
-                        
-                    }
+                    _spawnableEnemies.TryDequeue(out _currentEnemiesSpawning);
                 }
             }
             
             _spawnDelayTimer -= Time.deltaTime;
-
-            // if (!_hasEnemiesRemaining)
-            // {
-            //     _levelController.TransitionToState(new LevelEndState(_levelController));
-            // }
         }
 
         public override void Exit()
@@ -90,6 +93,11 @@ namespace Level.State
             int randomIndex = random.Next(0, list.Count);
 
             return list[randomIndex];
+        }
+        
+        private void EnemyManager_OnAllEnemiesDestroyed()
+        {
+            _hasEnemiesRemaining = false;
         }
     }
 }

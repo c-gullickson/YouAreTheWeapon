@@ -1,4 +1,5 @@
 using Enemy.Controller;
+using Enemy.State.MovementStates;
 using UnityEngine;
 
 namespace Enemy.State
@@ -13,7 +14,7 @@ namespace Enemy.State
         public override void Enter()
         {
             Debug.Log("Enter Enemy Idle State");
-            _enemyController.TransitionToState(new EnemyMoveState(_enemyController));
+            _enemyController.TransitionToState(EnemyMovementFactory.CreateEnemyMoveState(_enemyController));
         }
 
         public override void Update()
