@@ -10,11 +10,13 @@ namespace Level.State
 
         public LevelTutorialState(LevelController levelController) : base(levelController)
         {
-            _isTutorialComplete = false;
+            
         }
 
         public override void Enter()
         {
+            _isTutorialComplete = false;
+            
             Debug.Log($"Enter Level Tutorial {_levelController.CurrentLevelIndex}");
             
             // If there is no Level Tutorial, transition to the Idle State

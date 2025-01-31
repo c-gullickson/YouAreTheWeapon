@@ -36,7 +36,7 @@ namespace Weapon.ConcreteClasses
 
         public override void ActivateWeapon()
         {
-            Debug.Log("Simple Laser Shoot");  
+            Debug.Log("Wide Laser Shoot");  
 
             // Perform a raycast to detect where the laser should hit
             RaycastHit hit;

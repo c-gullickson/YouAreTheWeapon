@@ -3,13 +3,8 @@ using UnityEngine.SceneManagement;
 
 namespace UserInterface.GameOver
 {
-    public class GameOver: MonoBehaviour
+    public class ReturnToMainMenu: MonoBehaviour
     {
-        private void Awake()
-        {
-            Debug.Log("Game Over");
-        }
-
         public void OnMainMenu_ButtonClick()
         {
             Debug.Log("OnMainMenu_ButtonClick");

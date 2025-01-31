@@ -18,10 +18,10 @@ namespace UserInterface.MainMenu
         /// <summary>
         /// Transition the scene into the Option Scene
         /// </summary>
-        public void OnOptions_ButtonClick()
+        public void OnAbout_ButtonClick()
         {
-            Debug.Log("OnOptions_ButtonClick");
-            SceneManager.LoadScene("OptionsScene");
+            Debug.Log("OnAbout_ButtonClick");
+            SceneManager.LoadScene("MainMenuAboutScene");
         }
         
         

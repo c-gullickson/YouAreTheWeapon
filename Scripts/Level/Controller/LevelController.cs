@@ -33,9 +33,6 @@ namespace Level.Controller
 
         private void Awake()
         {
-            // Set to the first level
-            LevelManager.Instance.NewLevel(_currentLevelIndex);
-            
             _currentLevelScriptableObject = _levelConfigurationScriptableObject.Levels[_currentLevelIndex];
             _currentState = new LevelTutorialState(this);
             _currentState.Enter();
@@ -53,6 +50,9 @@ namespace Level.Controller
             {
                 _advancedSpawnControllerTransforms.Add(advancedSpawnController.transform);;
             }
+            
+            // Set to the first level
+            LevelManager.Instance.NewLevel(_currentLevelIndex);
         }
         
         private void Update()
